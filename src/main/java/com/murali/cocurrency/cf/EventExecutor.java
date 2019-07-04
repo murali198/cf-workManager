@@ -15,9 +15,14 @@ public class EventExecutor {
 	@Qualifier("cfTaskExecutor")
 	private TaskExecutor executor;
 
-	public List<String> executeTask() {
+	public List<String> executeCfTask() {
 		List<Task> tasks = IntStream.range(0, 10).mapToObj(i -> new Task(1, i)).collect(Collectors.toList());
 		return useCompletableFutureWithExecutor(tasks);
+	}
+
+	public List<String> executeStreamTask() {
+		List<Task> tasks = IntStream.range(0, 10).mapToObj(i -> new Task(1, i)).collect(Collectors.toList());
+		return useParallelStream(tasks);
 	}
 
 	public List<String> useParallelStream(List<Task> tasks) {

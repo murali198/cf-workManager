@@ -16,9 +16,16 @@ public class AppController {
 	@Autowired
 	private EventExecutor executor;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "cf/", method = RequestMethod.GET)
 	public String printHello(ModelMap model) throws InterruptedException, ExecutionException {
-		List<String> result = executor.executeTask();
+		List<String> result = executor.executeCfTask();
+		model.addAttribute("msg", result);
+		return "AppPage";
+	}
+
+	@RequestMapping(value = "stream/", method = RequestMethod.GET)
+	public String callStream(ModelMap model) throws InterruptedException, ExecutionException {
+		List<String> result = executor.executeStreamTask();
 		model.addAttribute("msg", result);
 		return "AppPage";
 	}
