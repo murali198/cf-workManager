@@ -13,18 +13,27 @@ public class EventExecutor {
 
 	@Autowired
 	@Qualifier("cfTaskExecutor")
-	private TaskExecutor cfExecutor;
+	private TaskExecutor executor;
 
-	public CompletableFuture<List> executeTask() {
-		return CompletableFuture.supplyAsync(()-> {
-			System.out.println("CompletableFuture Supplier Thread name[" + Thread.currentThread().getName()+"]");
-			return IntStream.range(1, 3).mapToObj( i -> getData(i)).collect(Collectors.toList());
-		}, cfExecutor);
+	public List<String> executeTask() {
+		List<Task> tasks = IntStream.range(0, 10).mapToObj(i -> new Task(1, i)).collect(Collectors.toList());
+		return useCompletableFutureWithExecutor(tasks);
 	}
 
-	private String getData(int val)  {
-		String name = Thread.currentThread().getName();
-		System.out.println("Thread name[" + name+"] for the val ["+ val +"]");
-		return name;
+	public List<String> useParallelStream(List<Task> tasks) {
+		return tasks.parallelStream().map(Task::calculate).collect(Collectors.toList());
+	}
+
+	public List<String> useCompletableFutureWithExecutor(List<Task> tasks) {
+		List<CompletableFuture<String>> futures =
+				tasks.stream()
+						.map(t -> CompletableFuture.supplyAsync(() -> t.calculate(), executor))
+						.collect(Collectors.toList());
+
+		List<String> result =
+				futures.stream()
+						.map(CompletableFuture::join)
+						.collect(Collectors.toList());
+		return result;
 	}
 }

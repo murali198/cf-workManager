@@ -18,8 +18,8 @@ public class AppController {
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String printHello(ModelMap model) throws InterruptedException, ExecutionException {
-		CompletableFuture<List> result = executor.executeTask();
-		model.addAttribute("msg",result.get() );
+		List<String> result = executor.executeTask();
+		model.addAttribute("msg", result);
 		return "AppPage";
 	}
 }
